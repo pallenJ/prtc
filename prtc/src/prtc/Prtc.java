@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 public class Prtc {
 	public static void main(String args[]) {
 		String path = "C:\\Users\\준모\\Desktop";//
@@ -21,7 +22,6 @@ public class Prtc {
 			Method m = new Method(path, input, output);
 			m.finalCal();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -29,12 +29,9 @@ public class Prtc {
 	}
 }
 class Method {
+	private Map<String,Integer> pattern;
 	
-
 	public void finalCal() throws Exception {
-/*		Map<String,Integer> result = new HashMap<>();*/
-		/*System.out.println(pattern.size());*/
-		Map<String,Set<String>> ptrIdx = new HashMap<>();
 		
 		BufferedReader in = new BufferedReader(new FileReader(new File(path + input)));
 		BufferedWriter out = new BufferedWriter(new FileWriter(path+output,true));
@@ -42,42 +39,22 @@ class Method {
 		int k=0;
 		while ((s=in.readLine())!=null) {
 			
-			String [] temp = s.split(" ");
-			
-			for (String string : temp) {
-				if(string.length()>12||string.length()<2) continue;
-				String key = "";
-				try {
-					key = string.substring(0,1);
-				} catch (Exception e) {
-					continue;
-				}
-				
-				int n = count(string);
-				
-				if(ptrIdx.get(key)==null) {
-					ptrIdx.put(key, new HashSet<>());
-					ptrIdx.get(key).add(string);
-				}
-				else if(ptrIdx.get(key).contains(string)) {
-					continue;
-				}else {
-				ptrIdx.get(key).add(string);
-				}
-				out.write(string+" "+n);
-				out.newLine();
+			for (String p : pattern.keySet()) {
+				int num = pattern.get(p)+search(s, p).size();
+				pattern.put(p, num);
 			}
+			
 			System.out.println(k++);
 			
 		}
+		Set<String> print =new TreeSet<>(pattern.keySet());
+		for (String p : print) {
+			out.write(p+" "+pattern.get(p));
+			out.newLine();
+		}
 		in.close();
 		
-		
-		/*for (String string : ptrIdx) {
-			out.write(string+" "+idx.get(string.substring(0,1)).get(string));
-			out.newLine();
-		}*/
-		
+	
 		out.close();
 	}
 	
@@ -95,21 +72,21 @@ class Method {
 		return num;
 	}
 	
-	/*private Set<String> ptrIdx() throws Exception {
+	private Map<String,Integer> ptrIdx() throws Exception {
 		BufferedReader in = new BufferedReader(new FileReader(new File(path + input)));
-		Set<String> pattern = new HashSet<>();
+		Map<String,Integer> ptn = new HashMap<>();
 		String s;
 		while ((s=in.readLine())!=null) {
 			String [] temp = s.split(" ");
 			for (String string : temp) {
-				pattern.add(string);
+				ptn.put(string,0);
 			}
 			
 		}
 		in.close();
-		return pattern;
+		return ptn;
 	}
-*/	
+	
 	public Set<Integer> search(String s, String p) {
 		Set<Integer> sIdx = new HashSet<>();
 		char[] str = s.toCharArray();
@@ -167,29 +144,24 @@ class Method {
 		this.path = path;
 		this.input = input;
 		this.output = output;
-		
+		pattern = ptrIdx();
 	}
 	
 	public String getPath() {
 		return path;
 	}
-
 	public void setPath(String path) {
 		this.path = path;
 	}
-
 	public String getInput() {
 		return input;
 	}
-
 	public void setInput(String input) {
 		this.input = input;
 	}
-
 	public String getOutput() {
 		return output;
 	}
-
 	public void setOutput(String output) {
 		this.output = output;
 	}
