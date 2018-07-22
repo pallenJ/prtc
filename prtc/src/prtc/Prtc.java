@@ -13,8 +13,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 public class Prtc {
 	public static void main(String args[]) {
+		
 		String path = "C:\\Users\\준모\\Desktop";//
 		String input = "\\corpus.txt";
 		String output = "\\output.txt";
@@ -24,8 +26,8 @@ public class Prtc {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
+	
+			
 	}
 }
 class Method {
@@ -72,20 +74,66 @@ class Method {
 		return num;
 	}
 	
-	private Map<String,Integer> ptrIdx() throws Exception {
+	private void setPattern() throws Exception {
 		BufferedReader in = new BufferedReader(new FileReader(new File(path + input)));
-		Map<String,Integer> ptn = new HashMap<>();
+		pattern = new HashMap<>();
 		String s;
+		String regex = "^[ㄱ-ㅎㅏ-ㅣ]*$";
 		while ((s=in.readLine())!=null) {
 			String [] temp = s.split(" ");
+			
 			for (String string : temp) {
-				ptn.put(string,0);
+				if(!Pattern.matches(regex, string)) {
+				ptnInsert(string);
+				}else {
+				pattern.put(string, 0);	
+				}
 			}
 			
 		}
 		in.close();
-		return ptn;
 	}
+public void ptnInsert(String str) {
+		
+		System.out.println(str);
+		
+		int i   = 0 ;
+		boolean[] flag = test(str);
+		int key=0;
+		while(true) {
+			
+			if(flag[i]) {
+				String s = str.substring(i-key, i);
+				if(key>0&&!pattern.containsKey(s))
+				{
+					System.out.println("s:"+s);
+					pattern.put(s, 0);
+				}	
+				key=0;		
+			}else {
+				key++;
+			}
+			++i;
+			if(i==str.length()) break;
+		}
+		String s = str.substring(i-key, i);
+		if(key!=0&&!pattern.containsKey(s))
+		{
+			System.out.println("last:"+s);
+			pattern.put(s, 0);
+		}
+	}
+	
+	private boolean[] test(String s) {
+		boolean[] rs = new boolean [s.length()];
+		String regex = "^[ㄱ-ㅎㅏ-ㅣ]*$";
+		for (int i = 0; i < rs.length; i++) {
+			String temp = s.substring(i, i+1);
+			rs[i] = !Pattern.matches(regex, temp);
+		}
+		return rs;
+	}
+	
 	
 	public Set<Integer> search(String s, String p) {
 		Set<Integer> sIdx = new HashSet<>();
@@ -113,6 +161,7 @@ class Method {
 		}
 		return sIdx;
 	}
+	
 	private int[] getPi(String s) {
 		int[] pi = new int[s.length()];
 		for (int i = 0; i < s.length(); i++) {
@@ -120,6 +169,7 @@ class Method {
 		}
 		return pi;
 	}
+	
 	private int pi(String s, int i) {
 		if (i == 0)
 			return 0;
@@ -134,6 +184,8 @@ class Method {
 		}
 		return result;
 	}
+	
+	
 	private String path;
 	private String input;
 	private String output;
@@ -144,7 +196,7 @@ class Method {
 		this.path = path;
 		this.input = input;
 		this.output = output;
-		pattern = ptrIdx();
+		setPattern();
 	}
 	
 	public String getPath() {
